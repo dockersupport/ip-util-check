@@ -23,11 +23,11 @@ The script flags several potential conditions for each overlay:
 
 Building the Container
 ======================
-docker image build -t ctelfer/ip-util-check . 
+docker image build -t docker/ip-util-check .
 
 
 Running the Container
 =====================
 
     docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
-            ctelfer/ip-util-check
+            docker/ip-util-check
