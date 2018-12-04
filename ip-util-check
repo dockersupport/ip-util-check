@@ -1,4 +1,4 @@
-#!/bin/bash
+#!usr/bin/env bash
 
 export DOCKER_CERT_PATH
 export DOCKER_HOST
@@ -15,6 +15,14 @@ declare -A NET2NCIP	  # number of container IP addresses for each overlay networ
 declare -A NET2NVIP	  # number of virtual IP addresses for each overlay network
 declare -A NET2NNODES # number of nodes where the overlay is currently used
 
+
+debugme() {
+ [[ $script_debug = 1 ]] && "$@" || :
+ # be sure to append || : or || true here or use return 0, since the return code
+ # of this function should always be 0 to not influence anything else with an unwanted
+ # "false" return code (for example the script's exit code if this function is used
+ # as the very last command in the script)
+}
 
 # Report the general IP utilization status of an overlay network
 # Args:
@@ -51,6 +59,7 @@ SVCIDS=$(docker service ls -q)
 
 
 echo "Gathering overlay network information"
+debugme set -x
 for net in $NETS ; do
   networkInspect=$( docker network inspect $net )
         NET2NAME[$net]=$(echo $networkInspect | jq -r '.[].Name')
@@ -70,9 +79,10 @@ for net in $NETS ; do
                 NET2CAP[$net]=$(( ${NET2CAP[$net]} + $subcap ))
         done
 done
-
+debugme set +x
 
 echo "Counting container IP allocations per network"
+debugme set -x
 for node in $NODEIDS ; do
 	for task in $(docker node ps -f 'desired-state = running' -q $node) ; do
 		nets=$(docker inspect $task | jq -r '.[].Spec.Networks[].Target' 2>/dev/null | cut -c 1-12)
@@ -81,9 +91,11 @@ for node in $NODEIDS ; do
 		done
 	done
 done
+debugme set +x
 
 
 echo "Counting service VIP allocations per network"
+debugme set -x
 for svc in $SVCIDS ; do
 	for viprec in $(docker service inspect $svc | jq -rc '.[].Endpoint.VirtualIPs[]' 2>/dev/null); do
 		net=$(echo "$viprec" | jq -r '.NetworkID' | cut -c 1-12)
@@ -91,7 +103,7 @@ for svc in $SVCIDS ; do
 		NET2NVIP[$net]=$((${NET2NVIP[$net]} + 1))
 	done
 done
-
+debugme set +x
 
 # Report the IP utilization for each overlay network
 echo ""
@@ -99,4 +111,3 @@ echo "Overlay IP Utilization Report"
 for net in $NETS ; do
 	report $net
 done
-
