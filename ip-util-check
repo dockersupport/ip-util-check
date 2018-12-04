@@ -1,8 +1,8 @@
 #!usr/bin/env bash
 
-export DOCKER_CERT_PATH
-export DOCKER_HOST
-export DOCKER_TLS_VERIFY
+# export DOCKER_CERT_PATH
+# export DOCKER_HOST
+# export DOCKER_TLS_VERIFY
 
 set -e
 
@@ -17,7 +17,7 @@ declare -A NET2NNODES # number of nodes where the overlay is currently used
 
 
 debugme() {
- [[ $script_debug = 1 ]] && "$@" || :
+ [[ $DEBUG = 1 ]] && "$@" || :
  # be sure to append || : or || true here or use return 0, since the return code
  # of this function should always be 0 to not influence anything else with an unwanted
  # "false" return code (for example the script's exit code if this function is used
