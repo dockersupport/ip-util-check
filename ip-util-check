@@ -1,4 +1,4 @@
-#!usr/bin/env bash
+#!/usr/bin/env bash
 
 # export DOCKER_CERT_PATH
 # export DOCKER_HOST
@@ -66,7 +66,7 @@ for net in $NETS ; do
 	set +e
         NET2SUB[$net]=$(echo $networkInspect | jq -r '.[].IPAM.Config[].Subnet' 2>/dev/null)
 	if [ -z "${NET2SUB[$net]}" ] ; then
-		NET2SUB[$net]=$(docker network inspect ${NET2NAME[$net]} | jq -r '.[].IPAM.Config[].Subnet' 2>/dev/null)
+		NET2SUB[$net]=$(swarmctl network inspect ${NET2NAME[$net]} | grep Subnet | awk -F ": " '{print $2}' 2>/dev/null)
 	fi
 	set -e
         NET2CAP[$net]=0
