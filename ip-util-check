@@ -29,7 +29,7 @@ report() {
     SAFECAP=$(( ${NET2CAP[$1]} * 75 / 100 ))                # safe capacity is the 75% of the whole address space
     HDRM=$(( ${NET2CAP[$1]} - $USE - ${NET2NNODES[$1]}))    # how many IPs are currently free in the network
     if [ ${NODESESTIMATED[$1]} -eq 1 ]; then
-      echo "Network ${NET2NAME[$1]}/$1 has an IP address capacity of ${NET2CAP[$1]} and an estimate use of $USE addresses"
+      echo "Network ${NET2NAME[$1]}/$1 has an IP address capacity of ${NET2CAP[$1]} and uses approximately $USE addresses"
     else
       echo "Network ${NET2NAME[$1]}/$1 has an IP address capacity of ${NET2CAP[$1]} and uses $USE addresses spanning over ${NET2NNODES[$1]} nodes"
     fi
