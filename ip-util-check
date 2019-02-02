@@ -68,10 +68,11 @@ for net in $NETS ; do
         NET2NAME[$net]=$(echo $networkInspect | jq -r '.[].Name')
   set +e
         NET2SUB[$net]=$(echo $networkInspect | jq -r '.[].IPAM.Config[].Subnet' 2>/dev/null)
-  if [ -z "${NET2SUB[$net]}" ] ; then
-    NET2SUB[$net]=$(docker network inspect ${NET2NAME[$net]} | jq -r '.[].IPAM.Config[].Subnet' 2>/dev/null)
-  fi
-  set -e
+
+	if [ -z "${NET2SUB[$net]}" ] ; then
+		NET2SUB[$net]=$(/usr/bin/swarmctl network inspect ${NET2NAME[$net]} | grep Subnet | awk -F ": " '{print $2}' 2>/dev/null)
+	fi
+	set -e
         NET2CAP[$net]=0
         NET2NCIP[$net]=0
         NET2NVIP[$net]=0
